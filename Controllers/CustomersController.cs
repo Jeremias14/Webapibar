@@ -35,6 +35,24 @@ namespace WebApiBar.Controller
             
             return Ok(customer);
         }
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> Get(string name)
+        {
+            var customer = await _repocustomer.GetCustomersNameAsync(name);
+            if(customer == null)
+                return NotFound("Producto no encontrado");
+            
+            return Ok(customer);
+        }
+        [HttpGet("cellphone/{cellphone}")]
+        public async Task<IActionResult> Get(string cellphone)
+        {
+            var customer = await _repocustomer.GetCustomersCellphoneAsync(cellphone);
+            if(customer == null)
+                return NotFound("Producto no encontrado");
+            
+            return Ok(customer);
+        }
 
         [HttpPost]
 
