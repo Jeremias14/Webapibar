@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApiBar.Data.Interfaces;
+using WebApiBar.Dtos;
 using WebApiBar.Models;
 
 namespace WebApiBar.Controller
@@ -27,16 +28,24 @@ namespace WebApiBar.Controller
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetIdCustomer(int id)
         {
             var customer = await _repocustomer.GetCustomersIdAsync(id);
+            
             if(customer == null)
-                return NotFound("Producto no encontrado");
+                return NotFound("Producto no encontrado"); 
+            
+            var customerDto = new CustomerGetDto();
+            customerDto.Id = customer.Id;
+            customer.Name = customer.Name;
+            customer.Address = customer.Address;
+            customer.Cellphone = customer.Cellphone;
             
             return Ok(customer);
         }
+        
         [HttpGet("name/{name}")]
-        public async Task<IActionResult> Get(string name)
+        public async Task<IActionResult> GetNameCustomer(string name)
         {
             var customer = await _repocustomer.GetCustomersNameAsync(name);
             if(customer == null)
@@ -45,7 +54,7 @@ namespace WebApiBar.Controller
             return Ok(customer);
         }
         [HttpGet("cellphone/{cellphone}")]
-        public async Task<IActionResult> Get(string cellphone)
+        public async Task<IActionResult> GetCellphoneCustomer(string cellphone)
         {
             var customer = await _repocustomer.GetCustomersCellphoneAsync(cellphone);
             if(customer == null)
@@ -56,28 +65,33 @@ namespace WebApiBar.Controller
 
         [HttpPost]
 
-        public async Task<IActionResult> Post(Customer customer)
+        public async Task<IActionResult> Post(CustomerCreateDto customerDto)
         {
-            customer.Dateofcreation = DateTime.Now;
-            _repocustomer.Add(customer);
+            var customerToCreate = new Customer();
+            customerToCreate.Name = customerDto.Name;
+            customerToCreate.Address = customerDto.Address;
+            customerToCreate.Cellphone = customerDto.Cellphone;
+            customerToCreate.Dateofcreation = DateTime.Now;
+            _repocustomer.Add(customerToCreate);
             if(await _repocustomer.SaveAll())
-                return Ok(customer);
+                return Ok(customerToCreate);
             return BadRequest();
         }
-// Gabriel.majluf@ices.edu.ar
 
-        [HttpPut]
-
-        public async Task<IActionResult> Put(Customer customer)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, CustomerUpdateDto customerDto)
         {
-            var customerToUpdate = await _repocustomer.GetCustomersIdAsync(customer.Id);
+            if(id != customerDto.Id)
+                return BadRequest("El cliente no fue encontrado");
+                
+            var customerToUpdate = await _repocustomer.GetCustomersIdAsync(customerDto.Id);
 
             if (customerToUpdate == null)
                 return BadRequest("EL id no existe");
 
-            customerToUpdate.Name = customer.Name;
-            customerToUpdate.Address = customer.Address;
-            customerToUpdate.Cellphone = customer.Cellphone;
+            //customerToUpdate.Name = customerDto.Name;
+            customerToUpdate.Address = customerDto.Address;
+            customerToUpdate.Cellphone = customerDto.Cellphone;
 
             if(!await _repocustomer.SaveAll())
                 return NoContent();
