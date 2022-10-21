@@ -33,15 +33,15 @@ namespace WebApiBar.Controller
             var customer = await _repocustomer.GetCustomersIdAsync(id);
             
             if(customer == null)
-                return NotFound("Producto no encontrado"); 
+                return NotFound("Cliente no encontrado"); 
             
             var customerDto = new CustomerGetDto();
             customerDto.Id = customer.Id;
-            customer.Name = customer.Name;
-            customer.Address = customer.Address;
-            customer.Cellphone = customer.Cellphone;
+            customerDto.Name = customer.Name;
+            customerDto.Address = customer.Address;
+            customerDto.Cellphone = customer.Cellphone;
             
-            return Ok(customer);
+            return Ok(customerDto);
         }
         
         [HttpGet("name/{name}")]

@@ -7,6 +7,9 @@ namespace WebApiBar.Dtos
 {
     public class CustomerCreateDto
     {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Cellphone { get; set; }
         
     }
 }
