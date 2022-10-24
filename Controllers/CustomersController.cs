@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebApiBar.Data.Interfaces;
 using WebApiBar.Dtos;
@@ -14,32 +15,35 @@ namespace WebApiBar.Controller
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerRepository _repocustomer;
+        private readonly IMapper _mappercustomer;
 
-        public CustomersController(ICustomerRepository repocustomer)
+        public CustomersController(ICustomerRepository repocustomer, IMapper mappercustomer)
         {
             _repocustomer = repocustomer;
+            _mappercustomer = mappercustomer;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var customers = await _repocustomer.GetCustomersAsync();
+            var customerDto = _mappercustomer.Map<IEnumerable<Customer>>(customers);
             return Ok(customers);
         }
-
+ 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIdCustomer(int id)
         {
             var customer = await _repocustomer.GetCustomersIdAsync(id);
-            
+            var customerDto = _mappercustomer.Map<Customer>(customer);
             if(customer == null)
                 return NotFound("Cliente no encontrado"); 
             
-            var customerDto = new CustomerGetDto();
-            customerDto.Id = customer.Id;
-            customerDto.Name = customer.Name;
-            customerDto.Address = customer.Address;
-            customerDto.Cellphone = customer.Cellphone;
+            //var customerDto = new CustomerGetDto();
+            //customerDto.Id = customer.Id;
+            //customerDto.Name = customer.Name;
+            //customerDto.Address = customer.Address;
+            //customerDto.Cellphone = customer.Cellphone;
             
             return Ok(customerDto);
         }
@@ -49,7 +53,7 @@ namespace WebApiBar.Controller
         {
             var customer = await _repocustomer.GetCustomersNameAsync(name);
             if(customer == null)
-                return NotFound("Producto no encontrado");
+                return NotFound("Cliente no encontrado");
             
             return Ok(customer);
         }
@@ -58,20 +62,20 @@ namespace WebApiBar.Controller
         {
             var customer = await _repocustomer.GetCustomersCellphoneAsync(cellphone);
             if(customer == null)
-                return NotFound("Producto no encontrado");
+                return NotFound("Cliente no encontrado");
             
             return Ok(customer);
         }
 
         [HttpPost]
 
-        public async Task<IActionResult> Post(CustomerCreateDto customerDto)
+        public async Task<IActionResult> PostCustomer(CustomerPostDto customerDto)
         {
-            var customerToCreate = new Customer();
-            customerToCreate.Name = customerDto.Name;
-            customerToCreate.Address = customerDto.Address;
-            customerToCreate.Cellphone = customerDto.Cellphone;
-            customerToCreate.Dateofcreation = DateTime.Now;
+            //var customerToCreate = new Customer();
+            //customerToCreate.Name = customerDto.Name;
+            //customerToCreate.Address = customerDto.Address;
+            //customerToCreate.Cellphone = customerDto.Cellphone;
+            var customerToCreate = _mappercustomer.Map<Customer>(customerDto);
             _repocustomer.Add(customerToCreate);
             if(await _repocustomer.SaveAll())
                 return Ok(customerToCreate);
@@ -79,7 +83,7 @@ namespace WebApiBar.Controller
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, CustomerUpdateDto customerDto)
+        public async Task<IActionResult> PutCustomer(int id, CustomerPutDto customerDto)
         {
             if(id != customerDto.Id)
                 return BadRequest("El cliente no fue encontrado");
@@ -90,8 +94,9 @@ namespace WebApiBar.Controller
                 return BadRequest("EL id no existe");
 
             //customerToUpdate.Name = customerDto.Name;
-            customerToUpdate.Address = customerDto.Address;
-            customerToUpdate.Cellphone = customerDto.Cellphone;
+            //customerToUpdate.Address = customerDto.Address;
+            //customerToUpdate.Cellphone = customerDto.Cellphone;
+            _mappercustomer.Map(customerDto, customerToUpdate);
 
             if(!await _repocustomer.SaveAll())
                 return NoContent();
@@ -102,18 +107,18 @@ namespace WebApiBar.Controller
 
         [HttpDelete("{id}")]
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteCustomer(int id)
         {
             var customer = await _repocustomer.GetCustomersIdAsync(id);
 
             if(customer == null)
-                return NotFound("Producto no encontrado");
+                return NotFound("Cliente no encontrado");
             
             _repocustomer.Delete(customer);
             if(!await _repocustomer.SaveAll())
-                return BadRequest("El producto no fue encontrado");
+                return BadRequest("El cliente no fue encontrado");
             
-            return Ok("Producto borrado");
+            return Ok("Cliente borrado");
 
         }    
     }

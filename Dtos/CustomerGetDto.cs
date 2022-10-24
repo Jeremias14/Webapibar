@@ -11,6 +11,11 @@ namespace WebApiBar.Dtos
         public string Name { get; set; }
         public string Address { get; set; }
         public string Cellphone { get; set; }
+        public DateTime Dateofcreation { get; set; }
         
+        public CustomerGetDto()
+        {
+            Dateofcreation = DateTime.Now;
+        }
     }
 }

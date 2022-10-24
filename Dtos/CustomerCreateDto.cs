@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebApiBar.Dtos
 {
-    public class CustomerCreateDto
+    public class CustomerPostDto
     {
         public string Name { get; set; }
         public string Address { get; set; }
