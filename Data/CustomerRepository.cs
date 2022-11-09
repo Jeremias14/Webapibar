@@ -54,7 +54,7 @@ namespace WebApiBar.Data
 
         public async Task<Customer> GetCustomersNameAsync(string name)
         {
-           var customer=await _context.customers.FirstOrDefaultAsync(u => u.Name == name );
+           var customer= await _context.customers.FirstOrDefaultAsync(u => u.Name == name );
            return customer;
         }
 
