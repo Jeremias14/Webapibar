@@ -17,14 +17,12 @@ namespace WebApiBar.Controller
         private readonly ICustomerRepository _repocustomer;
         private readonly IMapper _mappercustomer;
 
-    //Prueba
-
-
         public CustomersController(ICustomerRepository repocustomer, IMapper mappercustomer)
         {
             _repocustomer = repocustomer;
             _mappercustomer = mappercustomer;
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Get()
